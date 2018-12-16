@@ -1,4 +1,4 @@
-package com.messages;
+package com.datappl;
 
 public class MsgPartitioner {
 }

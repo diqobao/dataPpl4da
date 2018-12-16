@@ -1,4 +1,4 @@
-package com.messages;
+package com.datappl.KafkaConsumerSink;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
