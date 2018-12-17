@@ -26,7 +26,7 @@ public class TwitterProducer {
         producer = new KafkaProducer<>(props);
     }
 
-    public void twitterProducerstart() {
+    public void twitterProducerStart() {
         TwitterFactory tf = new TwitterFactory();
         Twitter twitter = tf.getInstance();
 
@@ -93,7 +93,7 @@ public class TwitterProducer {
 
 
         TwitterProducer producer = new TwitterProducer();
-        producer.twitterProducerstart();
+        producer.twitterProducerStart();
 
 
     }
