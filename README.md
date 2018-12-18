@@ -12,4 +12,4 @@ A streaming real-time data pipeline for data analysis using Twitter Data.
 ## Path
 - Input Streaming data
 - Use Kafka
-- 
+- Use Spark Streaming to process data
