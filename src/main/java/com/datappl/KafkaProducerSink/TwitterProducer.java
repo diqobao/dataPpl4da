@@ -58,14 +58,12 @@ public class TwitterProducer {
 //                                top-icName, Integer.toString(j++), hashtage.getText()));
 //                    }
 //                }
-                producer.send(new ProducerRecord<String, String>(Long.toString(status.getUser().getId()), Long.toString(status.getId()), status.getText()));
-                System.out.println("Sent:" + status.getUser().getId());
                 producer.send(new ProducerRecord<String, String>("test", Long.toString(status.getId()), status.getText()));
                 System.out.println("Sent:" + status.getText());
-                if(status.getPlace() != null) producer.send(new ProducerRecord<String, String>(status.getPlace().getCountryCode(), Long.toString(status.getId()), status.getText()));
-                else producer.send(new ProducerRecord<String, String>("NullSpace", Long.toString(status.getId()), status.getText()));
+//                if(status.getPlace() != null) producer.send(new ProducerRecord<String, String>(status.getPlace().getCountryCode(), Long.toString(status.getId()), status.getText()));
+//                else producer.send(new ProducerRecord<String, String>("NullSpace", Long.toString(status.getId()), status.getText()));
 
-                if(status.getPlace() != null) System.out.println(status.getPlace().getCountryCode());
+//                if(status.getPlace() != null) System.out.println(status.getPlace().getCountryCode());
 
             }
             @Override
@@ -79,22 +77,6 @@ public class TwitterProducer {
         twitterStream.addListener(listener);
 
         twitterStream.sample();
-
-    }
-
-    public static void main(String[] args) throws Exception {
-//        ConfigurationBuilder cb = new ConfigurationBuilder();
-//        cb.setDebugEnabled(true)
-//                .setOAuthConsumerKey(oauth.consumerKey)
-//                .setOAuthConsumerSecret("your consumer secret")
-//                .setOAuthAccessToken("your access token")
-//                .setOAuthAccessTokenSecret("your access token secret");
-//        TwitterFactory tf = new TwitterFactory(cb.build());
-
-
-        TwitterProducer producer = new TwitterProducer();
-        producer.twitterProducerStart();
-
 
     }
 

@@ -33,9 +33,4 @@ public class Consumer {
                 System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
         }
     }
-
-    public static void main(String[] args) {
-        Consumer consumer = new Consumer(new String[]{"test"});
-        consumer.consumerStart();
-    }
 }
