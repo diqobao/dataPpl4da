@@ -1,23 +1,22 @@
 package com.datappl.SparkSink
 
-import javafx.css.converter.PaintConverter.SequenceConverter
-import org.apache.kafka.clients.consumer.ConsumerRecord
+import com.datappl.Util.TwitterDeserializer
+import twitter4j.Status;
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.spark.{SparkConf, SparkContext, TaskContext}
-import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}
-import org.apache.spark.streaming.kafka010._
-import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
+import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
-import org.json4s.jackson.Json
+import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
+import org.apache.spark.streaming.kafka010._
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 
-object SparkConnector {
+object SparkConnector2 {
 
   def createNewSparkServer(name: String, topics: Array[String]): Unit = {
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> "localhost:9092",
       "key.deserializer" -> classOf[StringDeserializer],
-      "value.deserializer" -> classOf[StringDeserializer],
+      "value.deserializer" -> classOf[TwitterDeserializer],
       "group.id" -> "group1",
       "auto.offset.reset" -> "latest",
       "enable.auto.commit" -> (false: java.lang.Boolean)
@@ -39,21 +38,16 @@ object SparkConnector {
 
 
 //    val streamingContext = new StreamingContext(sc, Seconds(10))
-    val stream = KafkaUtils.createDirectStream[String, String](
+    val stream = KafkaUtils.createDirectStream[Long, Status](
       streamingContext,
       PreferConsistent,
-      Subscribe[String, String](topics, kafkaParams)
+      Subscribe[Long, Status](topics, kafkaParams)
     )
-//    val stream = KafkaUtils.createDirectStream[String, Json](
-//      streamingContext,
-//      PreferConsistent,
-//      Subscribe[String, Json](topics, kafkaParams)
-//    )
 
-    val words = stream.flatMap(_.value().split(" "))
-    val wordCounts = words.map(word => (word, 1)).reduceByKey(_+_)
+    val tags = stream.flatMap(_.value().getHashtagEntities())
+    val tagCounts = tags.map(tag => (tag, 1)).reduceByKey(_+_)
 
-    wordCounts.print()
+    tagCounts.print()
 
     streamingContext.start()
     streamingContext.awaitTermination()

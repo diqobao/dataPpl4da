@@ -2,16 +2,22 @@ package com.datappl.KafkaProducerSink;
 
 import java.util.*;
 
+import com.google.gson.Gson;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.common.serialization.ExtendedSerializer;
 import twitter4j.*;
+import twitter4j.TwitterObjectFactory;
+
+import java.io.ObjectOutputStream;
 
 //import com.datappl.config.props.KafkaProperties;
 
 public class TwitterProducer {
 
-    final private Producer<String, String> producer;
+    final private Producer<Long, String> producer;
+    final private Producer<Long, String> producer2;
 
     public TwitterProducer() {
         Properties props = new Properties();
@@ -21,16 +27,17 @@ public class TwitterProducer {
         props.put("batch.size", 16384);
         props.put("linger.ms", 1);
         props.put("buffer.memory", 33554432);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producer = new KafkaProducer<>(props);
+        producer2 = new KafkaProducer<>(props);
     }
 
     public void twitterProducerStart() {
         TwitterFactory tf = new TwitterFactory();
         Twitter twitter = tf.getInstance();
 
-        int count = 0;
+//        int count = 0;
         StatusListener listener = new StatusListener() {
 
             @Override
@@ -58,8 +65,20 @@ public class TwitterProducer {
 //                                top-icName, Integer.toString(j++), hashtage.getText()));
 //                    }
 //                }
-                producer.send(new ProducerRecord<String, String>("test", Long.toString(status.getId()), status.getText()));
-                System.out.println("Sent:" + status.getText());
+//                String statusJson = TwitterObjectFactory.getRawJSON(status);
+//                JSONObject JSON_complete = new JSONObject(statusJson);
+//                String languageTweet = JSON_complete.getString("text");
+//                System.out.println(languageTweet);
+
+                Gson gson = new Gson();
+                String json = gson.toJson( status );
+
+                producer.send(new ProducerRecord<Long, String>("test", status.getId(), json));
+                String space = "NullPlace";
+                if(status.getPlace() != null) space = status.getPlace().getCountryCode();
+                System.out.println(space);
+                producer2.send(new ProducerRecord<Long, String>(space, status.getId(), json));
+//                System.out.println("Sent: " + space);
 //                if(status.getPlace() != null) producer.send(new ProducerRecord<String, String>(status.getPlace().getCountryCode(), Long.toString(status.getId()), status.getText()));
 //                else producer.send(new ProducerRecord<String, String>("NullSpace", Long.toString(status.getId()), status.getText()));
 

@@ -3,6 +3,9 @@ package com.datappl;
 import com.datappl.KafkaProducerSink.TwitterProducer;
 import com.datappl.KafkaConsumerSink.Consumer;
 
+import org.apache.kafka.common.serialization.Serializer;
+
+
 public class KafkaTest {
     public static void main(String[] args) {
 //        ConfigurationBuilder cb = new ConfigurationBuilder();
