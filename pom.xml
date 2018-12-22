@@ -78,6 +78,13 @@
             <version>2.6.5</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-hadoop -->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch-hadoop</artifactId>
+            <version>6.5.2</version>
+        </dependency>
+
 
     </dependencies>
 

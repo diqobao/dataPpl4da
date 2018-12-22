@@ -8,6 +8,7 @@ import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010._
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.elasticsearch.spark._
 
 
 object SparkConnector2 {
@@ -43,6 +44,13 @@ object SparkConnector2 {
       PreferConsistent,
       Subscribe[Long, Status](topics, kafkaParams)
     )
+
+    stream.foreachRDD ((rdd, time) =>
+      rdd.map(t => Map(
+        "id" -> t.value().getId
+      )).saveToEs("twittertest/tweets"))
+
+
 
     val tags = stream.flatMap(_.value().getHashtagEntities())
     val tagCounts = tags.map(tag => (tag, 1)).reduceByKey(_+_)

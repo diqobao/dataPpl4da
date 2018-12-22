@@ -49,7 +49,6 @@ object SparkConnector {
 //      PreferConsistent,
 //      Subscribe[String, Json](topics, kafkaParams)
 //    )
-
     val words = stream.flatMap(_.value().split(" "))
     val wordCounts = words.map(word => (word, 1)).reduceByKey(_+_)
 
