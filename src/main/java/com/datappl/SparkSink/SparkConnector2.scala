@@ -47,7 +47,12 @@ object SparkConnector2 {
 
     stream.foreachRDD ((rdd, time) =>
       rdd.map(t => Map(
-        "id" -> t.value().getId
+        "id" -> t.value().getId,
+        "user" -> t.value().getUser.getId,
+        "create_at" -> t.value().getCreatedAt,
+        "hashtags" -> t.value().getHashtagEntities.map(_.getText),
+        "taglen" -> t.value().getHashtagEntities.length,
+        "text" -> t.value().getText
       )).saveToEs("twittertest/tweets"))
 
 

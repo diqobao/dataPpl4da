@@ -1,6 +1,6 @@
 package com.datappl.SparkSink
 
-import javafx.css.converter.PaintConverter.SequenceConverter
+//import javafx.css.converter.PaintConverter.SequenceConverter
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.{SparkConf, SparkContext, TaskContext}

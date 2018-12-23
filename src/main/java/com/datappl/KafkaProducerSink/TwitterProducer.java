@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.ExtendedSerializer;
+import scala.collection.mutable.HashEntry$class;
 import twitter4j.*;
 import twitter4j.TwitterObjectFactory;
 
@@ -70,9 +71,9 @@ public class TwitterProducer {
 //                String languageTweet = JSON_complete.getString("text");
 //                System.out.println(languageTweet);
 
-                Gson gson = new Gson();
-                String json = gson.toJson( status );
-
+                //Gson gson = new Gson();
+                //String json = gson.toJson( status );
+                String json = TwitterObjectFactory.getRawJSON(status);
                 producer.send(new ProducerRecord<Long, String>("test", status.getId(), json));
                 String space = "NullPlace";
                 if(status.getPlace() != null) space = status.getPlace().getCountryCode();

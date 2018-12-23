@@ -33,7 +33,7 @@ public class Consumer {
             ConsumerRecords<Long, Status> records = consumer.poll(100);
             for (ConsumerRecord<Long, Status> record : records)
 //                System.out.println(record.value().getPlace().getCountryCode());
-                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value().toString());
+                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value().getHashtagEntities().length);
         }
     }
 }

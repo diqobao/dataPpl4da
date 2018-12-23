@@ -18,7 +18,7 @@ public class KafkaTest {
 
         TwitterProducer producer = new TwitterProducer();
         producer.twitterProducerStart();
-        Consumer consumer = new Consumer(new String[]{"test"});
+        Consumer consumer = new Consumer(new String[]{"NullPlace"});
         consumer.consumerStart();
 
     }
