@@ -1,5 +1,6 @@
 package com.datappl.KafkaProducerSink;
 
+import com.datappl.config.props.*;
 import java.util.*;
 
 import com.google.gson.Gson;
@@ -19,6 +20,9 @@ public class TwitterProducer {
 
     final private Producer<Long, String> producer;
     final private Producer<Long, String> producer2;
+    final private Producer<Integer, String> excProducer;
+    final private Producer<Long, Long> delProducer;
+    final private KafkaProperties KafkaProps;
 
     public TwitterProducer() {
         Properties props = new Properties();
@@ -32,6 +36,10 @@ public class TwitterProducer {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producer = new KafkaProducer<>(props);
         producer2 = new KafkaProducer<>(props);
+
+        KafkaProps = new KafkaProperties();
+        delProducer = new KafkaProducer<>(KafkaProps.delProp());
+        excProducer = new KafkaProducer<>(KafkaProps.excProp());
     }
 
     public void twitterProducerStart() {
@@ -44,13 +52,18 @@ public class TwitterProducer {
             @Override
             public void onException(Exception e) {
                 e.printStackTrace();
+                excProducer.send(new ProducerRecord<Integer, String>("exc", e.hashCode(),e.getMessage()));
+                System.out.println(e.getMessage());
             }
             @Override
             public void onDeletionNotice(StatusDeletionNotice arg) {
 //                System.out.println(status.getText());
+                delProducer.send(new ProducerRecord<Long, Long>("del", arg.getStatusId(), arg.getUserId()));
+                System.out.println(arg.getUserId());
             }
             @Override
             public void onScrubGeo(long userId, long upToStatusId) {
+                delProducer.send(new ProducerRecord<Long, Long>("geoDel", upToStatusId, userId));
             }
             @Override
             public void onStallWarning(StallWarning warning) {
