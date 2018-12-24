@@ -2,4 +2,6 @@
 .properties
 .class
 .iml
-/.idea/
+/.idea/*
+/target/*
+/src/main/resources/twitter4j.properties
