@@ -7,9 +7,11 @@ A streaming real-time data pipeline for data analysis using Twitter Data.
 
 ## Built with
 - jdk 9
+- kafka
 - scala 2.11.12
 
 ## Path
 - Input Streaming data
 - Use Kafka
 - Use Spark Streaming to process data
+- Use ElasticSearch for history data queries and visualization
