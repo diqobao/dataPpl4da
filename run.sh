@@ -4,5 +4,5 @@
 $ZOOKEEPER_HOME/bin/zkServer start
 
 # Start kafka server
-cd $KAFKA_HOME
+cd $KA
 bin/kafka-servber-start.sh config/server.properties

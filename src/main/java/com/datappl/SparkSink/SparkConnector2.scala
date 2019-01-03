@@ -22,23 +22,29 @@ class SparkConnector2(private var name: String, private var topics: Array[String
 //  var topics: Array[String]
 //  var _type: String
 //  var name: String
-  val kafkaParams: Map[String, Object] = Map[String, Object](
+  var kafkaParams: Map[String, Object] = Map[String, Object](
     "bootstrap.servers" -> "localhost:9092",
     "group.id" -> "group1",
     "auto.offset.reset" -> "latest",
-    "enable.auto.commit" -> (false: java.lang.Boolean),
-    "key.deserializer" -> classOf[LongDeserializer],
-    "value.deserializer" -> classOf[LongDeserializer]
+    "enable.auto.commit" -> (false: java.lang.Boolean)
+//    "key.deserializer" -> classOf[LongDeserializer],
+//    "value.deserializer" -> classOf[LongDeserializer]
   )
   if(_type.equals("status")) {
-    kafkaParams.updated("key.deserializer", classOf[LongDeserializer])
-    kafkaParams.updated("value.deserializer", classOf[TwitterDeserializer])
+//    kafkaParams.updated("key.deserializer", classOf[LongDeserializer])
+//    kafkaParams.updated("value.deserializer", classOf[TwitterDeserializer])
+    kafkaParams = kafkaParams + ("key.deserializer" -> classOf[LongDeserializer])
+    kafkaParams = kafkaParams + ("value.deserializer" -> classOf[TwitterDeserializer])
   }else if(_type.equals("delete")) {
-    kafkaParams.updated("key.deserializer", classOf[LongDeserializer])
-    kafkaParams.updated("value.deserializer", classOf[LongDeserializer])
+//    kafkaParams.updated("key.deserializer", classOf[LongDeserializer])
+//    kafkaParams.updated("value.deserializer", classOf[LongDeserializer])
+    kafkaParams = kafkaParams + ("key.deserializer" -> classOf[LongDeserializer])
+    kafkaParams = kafkaParams + ("value.deserializer" -> classOf[LongDeserializer])
   }else if(_type.equals("exception")) {
-    kafkaParams.updated("key.deserializer", classOf[IntegerDeserializer])
-    kafkaParams.updated("value.deserializer", classOf[IntegerDeserializer])
+//    kafkaParams.updated("key.deserializer", classOf[IntegerDeserializer])
+//    kafkaParams.updated("value.deserializer", classOf[IntegerDeserializer])
+    kafkaParams = kafkaParams + ("key.deserializer" -> classOf[IntegerDeserializer])
+    kafkaParams = kafkaParams + ("value.deserializer" -> classOf[IntegerDeserializer])
   }
 
 
@@ -83,9 +89,22 @@ class SparkConnector2(private var name: String, private var topics: Array[String
     //      Subscribe[Long, Status](topics, kafkaParams)
     //    )
 
-    val stream = _type match {
-      case "status" => StreamCreater.createStream(streamingContext, topics, kafkaParams)
-  }
+//    val stream = _type match {
+//      case "status" => StreamCreater.createStream(streamingContext, topics, kafkaParams)
+//    }
+    if (_type.equals("status")) {
+      val stream = StreamCreater.createStreamStatus(streamingContext, topics, kafkaParams)
+      val res = SparkProcessor.statusProcessor(stream)
+      res.print()
+    } else if (_type.equals("delete")) {
+      val stream = StreamCreater.createStreamDel(streamingContext, topics, kafkaParams)
+      val res = SparkProcessor.delProcessor(stream)
+      res.print()
+    } else if (_type.equals("exception")) {
+      val stream = StreamCreater.createStreamExc(streamingContext, topics, kafkaParams)
+      val res = SparkProcessor.excProcessor(stream)
+      res.print()
+    }
 
 
 //    stream.foreachRDD ((rdd, time) =>
@@ -102,11 +121,11 @@ class SparkConnector2(private var name: String, private var topics: Array[String
 //
 //    val tags = stream.flatMap(_.value().getHashtagEntities())
 //    val tagCounts = tags.map(tag => (tag, 1)).reduceByKey(_+_)
-    val res = _type match {
-      case "status" => SparkProcessor.statusProcessor(stream)
-      case "delete" => SparkProcessor.statusProcessor(stream)
-    }
-    res.print()
+//    val res = _type match {
+//      case "status" => SparkProcessor.statusProcessor(stream)
+//      case "delete" => SparkProcessor.statusProcessor(stream)
+//    }
+//    res.print()
 
     streamingContext.start()
     streamingContext.awaitTermination()

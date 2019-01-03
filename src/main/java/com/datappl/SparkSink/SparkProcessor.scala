@@ -25,4 +25,19 @@ object SparkProcessor {
 
     tagCounts
   }
+
+  def delProcessor(stream: InputDStream[ConsumerRecord[Long,Long]]): DStream[(Long, Int)] = {
+    stream.foreachRDD((rdd, time) =>
+    rdd.map(t => Map(
+      "sid" -> t.key(),
+      "uid" -> t.value()
+    )).saveToEs("twitterdel/deletions"))
+    val userCounts = stream.map(t => (t.value(), 1)).reduceByKey(_+_)
+    userCounts
+  }
+
+  def excProcessor(stream: InputDStream[ConsumerRecord[Int,Int]]): DStream[(Int, Int)] = {
+    val excCounts = stream.map(t => (t.key(), 1)).reduceByKey(_+_)
+    excCounts
+  }
 }
